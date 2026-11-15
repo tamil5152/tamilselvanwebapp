@@ -1,47 +1,55 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- SEO: edit these to match src/data/content.js -->
-    <title>Tamilselvan — Full-Stack Developer Portfolio</title>
+    <title>Tamil Selvan — Software Development Engineer & Full Stack Developer</title>
     <meta
       name="description"
-      content="Portfolio of Tamilselvan, a full-stack developer building fast, animated, user-focused web apps with React and JavaScript."
+      content="Tamil Selvan is a Software Development Engineer and Full Stack Developer in Hosur, India, building production web platforms with React, Next.js, Node.js and Spring Boot. SDE at CARATSTONE Solutions; creator of HackColab."
     />
     <meta
       name="keywords"
-      content="Tamilselvan, portfolio, React developer, full-stack developer, JavaScript, web developer, frontend"
+      content="Tamil Selvan, Software Development Engineer, Full Stack Developer, React, Next.js, Node.js, Spring Boot, Supabase, Java backend, HackColab, Hosur, Tamil Nadu"
     />
-    <meta name="author" content="Tamilselvan" />
+    <meta name="author" content="Tamil Selvan" />
     <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#08080d" />
+    <meta name="theme-color" content="#f2efe8" />
 
     <!-- Social sharing cards -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Tamilselvan — Full-Stack Developer" />
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content="Tamil Selvan — Software Development Engineer" />
     <meta
       property="og:description"
-      content="React & JavaScript developer. See my projects, skills and how to reach me."
+      content="I build production web platforms, end to end — React, Next.js, Node.js and Spring Boot."
     />
     <meta property="og:image" content="./og-image.svg" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Tamilselvan — Full-Stack Developer" />
+    <meta name="twitter:title" content="Tamil Selvan — Software Development Engineer" />
     <meta
       name="twitter:description"
-      content="React & JavaScript developer. See my projects, skills and how to reach me."
+      content="I build production web platforms, end to end — React, Next.js, Node.js and Spring Boot."
     />
 
-    <!-- Structured data so search engines understand who this page is about -->
+    <!-- Structured data so search engines connect this page to the right person -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Person",
-        "name": "Tamilselvan",
-        "jobTitle": "Full-Stack Developer",
-        "sameAs": ["https://github.com/tamil5152"],
-        "knowsAbout": ["React", "JavaScript", "Web Development", "Node.js"]
+        "name": "Tamil Selvan",
+        "jobTitle": "Software Development Engineer",
+        "email": "mailto:tamil515253@gmail.com",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Hosur",
+          "addressRegion": "Tamil Nadu",
+          "addressCountry": "IN"
+        },
+        "worksFor": { "@type": "Organization", "name": "CARATSTONE Solutions" },
+        "alumniOf": { "@type": "CollegeOrUniversity", "name": "Paavai College of Engineering" },
+        "sameAs": ["https://github.com/tamil5152", "https://www.linkedin.com/in/tamil--selvan/"],
+        "knowsAbout": ["React", "Next.js", "Node.js", "Spring Boot", "Java", "TypeScript", "Supabase", "PostgreSQL", "MongoDB", "Docker"]
       }
     </script>
 
@@ -49,21 +57,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Apply the saved theme before first paint to avoid a flash -->
+    <!-- Apply the saved (or system) theme before first paint to avoid a flash -->
     <script>
       try {
         var t = localStorage.getItem('theme')
+        if (!t && window.matchMedia('(prefers-color-scheme: dark)').matches) t = 'dark'
         if (t) document.documentElement.setAttribute('data-theme', t)
       } catch (e) {}
     </script>
   </head>
   <body>
     <div id="root"></div>
-    <noscript>Tamilselvan — Full-Stack Developer. Please enable JavaScript to view this portfolio.</noscript>
+    <noscript>
+      Tamil Selvan — Software Development Engineer and Full Stack Developer. Email tamil515253@gmail.com. Please
+      enable JavaScript to view the full portfolio.
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
