@@ -1,24 +1,20 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { about, featuredProjects, journey, profile, skills } from '../data/content.js'
-import { Arrow, Magnetic, Reveal, SectionHead, TiltCard } from './ui.jsx'
-
-const ease = [0.22, 1, 0.36, 1]
+import { education, experience, hackcolab, numbers, profile, toolkit } from '../data/content.js'
+import HackColab from './HackColab.jsx'
+import { Arrow, CountUp, Lines, Reveal, rich, Rule, SectionHead } from './ui.jsx'
 
 /* ───────────── Marquee ───────────── */
 export function Marquee() {
-  const items = skills.flatMap((s) => s.items)
+  const items = [...new Set(experience.flatMap((e) => e.stack).concat(hackcolab.stack))]
   const row = (hidden) => (
     <ul aria-hidden={hidden || undefined}>
       {items.map((item) => (
-        <li key={item}>
-          {item} <i>✦</i>
-        </li>
+        <li key={item}>{item}</li>
       ))}
     </ul>
   )
   return (
-    <div className="marquee" aria-label="Technologies I work with">
+    <div className="marquee" aria-label="Technologies used in production">
       <div className="marquee-track">
         {row(false)}
         {row(true)}
@@ -27,188 +23,151 @@ export function Marquee() {
   )
 }
 
-/* ───────────── About ───────────── */
-export function About() {
+/* ───────────── Numbers ───────────── */
+export function Numbers() {
   return (
-    <section className="section" id="about">
-      <SectionHead index="01" label="About" title="A developer with a designer's eye." />
-      <div className="about-grid">
-        <div className="about-text">
-          {about.paragraphs.map((p, i) => (
-            <Reveal as="p" key={i} delay={i * 0.1}>
-              {p}
-            </Reveal>
-          ))}
-        </div>
-        <div className="about-cards">
-          {about.highlights.map((h, i) => (
-            <Reveal key={h.title} delay={0.1 + i * 0.1}>
-              <TiltCard className="card highlight">
-                <span className="card-num">0{i + 1}</span>
-                <h3>{h.title}</h3>
-                <p>{h.text}</p>
-              </TiltCard>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-/* ───────────── Skills ───────────── */
-export function Skills() {
-  return (
-    <section className="section" id="skills">
-      <SectionHead index="02" label="Skills" title="The tools I reach for." />
-      <div className="skills-grid">
-        {skills.map((s, gi) => (
-          <Reveal key={s.group} delay={gi * 0.1}>
-            <div className="card skill-card">
-              <h3>{s.group}</h3>
-              <motion.ul
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, margin: '-40px' }}
-                variants={{ show: { transition: { staggerChildren: 0.05, delayChildren: 0.2 } } }}
-              >
-                {s.items.map((item) => (
-                  <motion.li
-                    key={item}
-                    variants={{
-                      hidden: { opacity: 0, scale: 0.8, y: 10 },
-                      show: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.5, ease } },
-                    }}
-                    whileHover={{ y: -3 }}
-                  >
-                    {item}
-                  </motion.li>
-                ))}
-              </motion.ul>
-            </div>
-          </Reveal>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-/* ───────────── Projects ───────────── */
-const langColor = {
-  JavaScript: '#f1e05a',
-  TypeScript: '#3178c6',
-  HTML: '#e34c26',
-  CSS: '#663399',
-  Python: '#3572a5',
-  Java: '#b07219',
-  Dart: '#00b4ab',
-  'C++': '#f34b7d',
-  Go: '#00add8',
-}
-
-function ProjectCard({ p, i }) {
-  return (
-    <Reveal delay={(i % 3) * 0.08}>
-      <TiltCard className="card project">
-        <div className="project-top">
-          <span className="card-num">{String(i + 1).padStart(2, '0')}</span>
-          <a href={p.url || p.repo} target="_blank" rel="noreferrer" aria-label={`Open ${p.name}`}>
-            <Arrow />
-          </a>
-        </div>
-        <h3>{p.name}</h3>
-        <p>{p.description || 'No description yet — open the repository to explore the code.'}</p>
-        <div className="project-meta">
-          {p.tags?.map((t) => (
-            <span className="tag" key={t}>
-              {langColor[t] && <i style={{ background: langColor[t] }} />}
-              {t}
-            </span>
-          ))}
-          {p.stars > 0 && <span className="tag">★ {p.stars}</span>}
-          {p.repo && p.url && p.repo !== p.url && (
-            <a className="tag tag-link" href={p.repo} target="_blank" rel="noreferrer">
-              Source
-            </a>
-          )}
-        </div>
-      </TiltCard>
-    </Reveal>
-  )
-}
-
-export function Projects({ repos, status }) {
-  const [showAll, setShowAll] = useState(false)
-  const all = [...featuredProjects, ...repos]
-  const visible = showAll ? all : all.slice(0, 6)
-  const github = `https://github.com/${profile.githubUser}`
-
-  return (
-    <section className="section" id="projects">
-      <SectionHead index="03" label="Projects" title="Things I've built." />
-
-      {status === 'loading' && all.length === 0 && (
-        <div className="projects-grid" aria-busy="true">
-          {[0, 1, 2].map((n) => (
-            <div className="card project skeleton" key={n} />
-          ))}
-        </div>
-      )}
-
-      {visible.length > 0 && (
-        <div className="projects-grid">
-          {visible.map((p, i) => (
-            <ProjectCard p={p} i={i} key={p.name} />
-          ))}
-        </div>
-      )}
-
-      {status !== 'loading' && all.length === 0 && (
-        <Reveal className="card empty">
-          <p>
-            {status === 'error'
-              ? "Couldn't load projects from GitHub right now."
-              : 'Projects are on their way.'}{' '}
-            You can browse everything on my GitHub profile.
-          </p>
-        </Reveal>
-      )}
-
-      <Reveal className="projects-more">
-        {all.length > 6 && (
-          <button className="btn" onClick={() => setShowAll((s) => !s)}>
-            {showAll ? 'Show fewer' : `Show all ${all.length}`}
-          </button>
-        )}
-        <Magnetic>
-          <a className="btn" href={github} target="_blank" rel="noreferrer">
-            More on GitHub <Arrow />
-          </a>
-        </Magnetic>
+    <section className="section" aria-labelledby="numbers-label">
+      <Reveal className="label" id="numbers-label">
+        <span>01</span>Results so far
       </Reveal>
+      <dl className="numbers">
+        {numbers.map((n, i) => (
+          <Reveal key={n.label} delay={i * 0.08}>
+            <dd>
+              <CountUp to={n.value} prefix={n.prefix} suffix={n.suffix} />
+            </dd>
+            <dt>
+              {n.label}
+              <small>{n.source}</small>
+            </dt>
+          </Reveal>
+        ))}
+      </dl>
     </section>
   )
 }
 
-/* ───────────── Journey ───────────── */
-export function Journey() {
-  if (!journey.length) return null
+/* ───────────── Experience ───────────── */
+export function Experience() {
   return (
-    <section className="section" id="journey">
-      <SectionHead index="04" label="Journey" title="Where I've been." />
-      <ol className="timeline">
-        {journey.map((j, i) => (
-          <Reveal as="li" key={j.title + j.period} delay={i * 0.08}>
-            <span className="period">{j.period}</span>
-            <div>
-              <h3>
-                {j.title} <span>· {j.place}</span>
-              </h3>
-              <p>{j.text}</p>
-            </div>
+    <section className="section" id="experience">
+      <SectionHead index="02" label="Experience" title={['Where the work', <em key="e">has shipped.</em>]} />
+      {experience.map((job) => (
+        <article className="job" key={job.company}>
+          <Rule />
+          <div className="job-grid">
+            <Reveal className="job-side">
+              <p className="mono">{job.period}</p>
+              <h3>{job.company}</h3>
+              <p className="job-role">
+                {job.role} · {job.place}
+              </p>
+              <p className="stack">{job.stack.join(' · ')}</p>
+            </Reveal>
+            <ol className="job-points">
+              {job.points.map((p, i) => (
+                <Reveal as="li" key={i} delay={i * 0.06}>
+                  <span>0{i + 1}</span>
+                  <p>{rich(p)}</p>
+                </Reveal>
+              ))}
+            </ol>
+          </div>
+        </article>
+      ))}
+    </section>
+  )
+}
+
+/* ───────────── Work ───────────── */
+function RepoList({ repos }) {
+  const [all, setAll] = useState(false)
+  const list = all ? repos : repos.slice(0, 6)
+  return (
+    <div className="repos">
+      <Reveal className="repos-head">
+        <p className="label">
+          <span>↳</span>Also on GitHub — live from @{profile.githubUser}
+        </p>
+      </Reveal>
+      <ul>
+        {list.map((r, i) => (
+          <Reveal as="li" key={r.name} delay={(i % 6) * 0.04}>
+            <a href={r.url} target="_blank" rel="noreferrer">
+              <span className="repo-name">{r.name}</span>
+              <span className="repo-desc">{r.description || '—'}</span>
+              <span className="repo-meta">{[r.language, r.year].filter(Boolean).join(' · ')}</span>
+              <Arrow />
+            </a>
           </Reveal>
         ))}
-      </ol>
+      </ul>
+      {repos.length > 6 && (
+        <button className="link" onClick={() => setAll((v) => !v)}>
+          {all ? 'Show fewer' : `Show all ${repos.length} repositories`}
+        </button>
+      )}
+    </div>
+  )
+}
+
+export function Work({ repos }) {
+  const hackRepo = repos.find((r) => hackcolab.repoMatch.test(r.name))
+  const others = repos.filter((r) => r !== hackRepo)
+  return (
+    <section className="section" id="work">
+      <SectionHead index="03" label="Selected work" title={['Built to be used,', <em key="e">not just demoed.</em>]} />
+      <HackColab repoUrl={hackRepo?.url} />
+      {others.length > 0 && <RepoList repos={others} />}
+    </section>
+  )
+}
+
+/* ───────────── Toolkit + Education ───────────── */
+export function Toolkit() {
+  return (
+    <section className="section" id="toolkit">
+      <SectionHead index="04" label="Toolkit" title={['What I', <em key="e">work with.</em>]} />
+      <div className="table">
+        {toolkit.map((row) => (
+          <div key={row.label}>
+            <Rule />
+            <Reveal className="table-row">
+              <p className="mono">{row.label}</p>
+              <p className="serif-list">
+                {row.items.map((item, i) => (
+                  <span key={item}>
+                    {item}
+                    {i < row.items.length - 1 && <i>/</i>}
+                  </span>
+                ))}
+              </p>
+            </Reveal>
+          </div>
+        ))}
+        <Rule />
+      </div>
+
+      <Reveal className="label edu-label">
+        <span>05</span>Education
+      </Reveal>
+      <div className="table">
+        {education.map((e) => (
+          <div key={e.school}>
+            <Rule />
+            <Reveal className="table-row edu-row">
+              <p className="mono">{e.period}</p>
+              <div>
+                <h3>{e.school}</h3>
+                <p>
+                  {e.detail} <span>— {e.place}</span>
+                </p>
+              </div>
+            </Reveal>
+          </div>
+        ))}
+        <Rule />
+      </div>
     </section>
   )
 }
@@ -226,57 +185,39 @@ export function Contact() {
     }
   }
   return (
-    <section className="section contact" id="contact">
-      <Reveal className="eyebrow">
-        <span>05</span> Contact
-      </Reveal>
-      <motion.h2
-        className="contact-title"
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, margin: '-40px' }}
-      >
-        {["Let's build", 'something', 'great.'].map((line, i) => (
-          <span className="clip" key={line}>
-            <motion.span
-              variants={{ hidden: { y: '105%' }, show: { y: 0 } }}
-              transition={{ duration: 0.9, delay: i * 0.1, ease }}
-            >
-              {line}
-            </motion.span>
-          </span>
-        ))}
-      </motion.h2>
-      <Reveal className="contact-actions" delay={0.2}>
-        <Magnetic>
-          <a className="btn btn-primary btn-lg" href={`mailto:${profile.email}`}>
-            {profile.email} <Arrow />
-          </a>
-        </Magnetic>
-        <button className="btn btn-lg" onClick={copy} aria-live="polite">
-          {copied ? 'Copied ✓' : 'Copy email'}
-        </button>
-      </Reveal>
-      <Reveal as="ul" className="socials" delay={0.3}>
-        {profile.socials.map((s) => (
-          <li key={s.label}>
-            <a href={s.url} target="_blank" rel="noreferrer">
-              {s.label} <Arrow />
+    <section className="contact" id="contact">
+      <div className="contact-inner">
+        <Reveal className="label">
+          <span>06</span>Contact
+        </Reveal>
+        <Lines className="display contact-title" lines={['Have a role', 'or a project?', <em key="e">Let's talk.</em>]} />
+        <Reveal className="contact-mail" delay={0.15}>
+          <a href={`mailto:${profile.email}`}>{profile.email}</a>
+          <button onClick={copy} aria-live="polite">
+            {copied ? 'Copied ✓' : 'Copy'}
+          </button>
+        </Reveal>
+        <Reveal as="ul" className="contact-links" delay={0.25}>
+          <li>
+            <a href={profile.links.linkedin} target="_blank" rel="noreferrer">
+              LinkedIn <Arrow />
             </a>
           </li>
-        ))}
-      </Reveal>
+          <li>
+            <a href={profile.links.github} target="_blank" rel="noreferrer">
+              GitHub <Arrow />
+            </a>
+          </li>
+          <li>{profile.location}</li>
+        </Reveal>
+      </div>
+      <footer className="footer">
+        <p>
+          © {new Date().getFullYear()} {profile.name}
+        </p>
+        <p>Built with React</p>
+        <a href="#top">Back to top ↑</a>
+      </footer>
     </section>
-  )
-}
-
-export function Footer() {
-  return (
-    <footer className="footer">
-      <p>
-        © {new Date().getFullYear()} {profile.name}. Built with React & Framer Motion.
-      </p>
-      <a href="#top">Back to top ↑</a>
-    </footer>
   )
 }
