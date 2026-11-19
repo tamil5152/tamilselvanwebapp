@@ -1,28 +1,129 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { ArrowRight, ArrowUpRight, FileText, Mail, MapPin, Search, Trophy } from 'lucide-react'
-import { about, achievements, education, profile, quote, stack } from '../data/content.js'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ArrowRight, ArrowUpRight, Eye, FileText, Mail, MapPin, RefreshCw, Search, Trophy } from 'lucide-react'
+import { about, achievements, education, profile, quotes, stack } from '../data/content.js'
 import Banner from './Banner.jsx'
 import { GithubIcon, LinkedinIcon } from './icons.jsx'
 import { BlurFade, ease, Section, Spacer, Tabs, usePalette } from './primitives.jsx'
 
 /* ───────── Hero ───────── */
+/** Photos that actually exist (missing files drop out), with the monogram always last. */
 function Avatar() {
-  const [failed, setFailed] = useState(false)
+  const [broken, setBroken] = useState([])
+  const [index, setIndex] = useState(0)
+  // Probe every photo up front so missing ones never take a click.
+  useEffect(() => {
+    profile.avatars.forEach((src) => {
+      const img = new Image()
+      img.onerror = () => setBroken((b) => (b.includes(src) ? b : [...b, src]))
+      img.src = src
+    })
+  }, [])
+  const options = [...profile.avatars.filter((src) => !broken.includes(src)), 'monogram']
+  const current = options[index % options.length]
+  const next = () => setIndex((i) => (i + 1) % options.length)
   return (
-    <div className="avatar">
-      {failed ? (
-        <span className="avatar-mono">{profile.initials}</span>
-      ) : (
-        <img src={profile.avatar} alt={profile.name} onError={() => setFailed(true)} />
+    <div
+      className="avatar"
+      onClick={options.length > 1 ? next : undefined}
+      title={options.length > 1 ? 'Click to change profile image' : undefined}
+      style={{ cursor: options.length > 1 ? 'pointer' : 'default' }}
+    >
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={current}
+          className="avatar-inner"
+          initial={{ opacity: 0, scale: 1.08, filter: 'blur(4px)' }}
+          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.25 }}
+        >
+          {current === 'monogram' ? (
+            <span className="avatar-mono">{profile.initials}</span>
+          ) : (
+            <img
+              src={current}
+              alt={profile.name}
+              onError={() => setBroken((b) => (b.includes(current) ? b : [...b, current]))}
+            />
+          )}
+        </motion.div>
+      </AnimatePresence>
+      {/* CRT scanlines + a slow scan bar */}
+      <span className="scanlines" aria-hidden="true">
+        <span />
+      </span>
+      {options.length > 1 && (
+        <button
+          className="avatar-switch"
+          onClick={(e) => {
+            e.stopPropagation()
+            next()
+          }}
+          aria-label="Switch profile image"
+        >
+          <RefreshCw size={10} strokeWidth={2} />
+        </button>
       )}
     </div>
   )
 }
 
+/** Title under the name that slides to the next role every 3.2 s. */
+function RotatingRole() {
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => setI((n) => (n + 1) % profile.roles.length), 3200)
+    return () => clearInterval(id)
+  }, [])
+  return (
+    <div className="role-slot" aria-live="off">
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={i}
+          className="profile-role"
+          initial={{ y: 12, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -12, opacity: 0 }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+        >
+          {profile.roles[i]}
+        </motion.p>
+      </AnimatePresence>
+    </div>
+  )
+}
+
+/**
+ * Live visitor count from a free counter API. It counts once per browser session
+ * and stays hidden if the service is unreachable — no made-up numbers.
+ */
+function useViews(key) {
+  const [views, setViews] = useState(null)
+  useEffect(() => {
+    if (!key) return
+    let seen = false
+    try {
+      seen = sessionStorage.getItem('visited') === '1'
+      sessionStorage.setItem('visited', '1')
+    } catch {
+      /* storage blocked: just read */
+      seen = true
+    }
+    const ctrl = new AbortController()
+    fetch(`https://countapi.mileshilliard.com/api/v1/${seen ? 'get' : 'hit'}/${key}`, { signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((d) => typeof d.value === 'number' && setViews(d.value))
+      .catch(() => {})
+    return () => ctrl.abort()
+  }, [key])
+  return views
+}
+
 export function Hero() {
   const { setOpen } = usePalette()
+  const views = useViews(profile.viewsKey)
   return (
     <div className="hero">
       <motion.div initial={{ opacity: 0, scale: 0.985 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, ease }}>
@@ -33,18 +134,28 @@ export function Hero() {
           <Avatar />
         </BlurFade>
         <div className="profile-text">
-          <BlurFade as="h1" delay={0.2} className="profile-name">
+          <BlurFade as="h1" delay={0.2} className="profile-name text-glitch">
             {profile.name}
           </BlurFade>
-          <BlurFade as="p" delay={0.25} className="profile-role">
-            {profile.role}
+          <BlurFade delay={0.25}>
+            <RotatingRole />
           </BlurFade>
           <BlurFade as="p" delay={0.3} className="profile-meta">
-            <MapPin size={12} /> {profile.location}
-            <span className="sep">·</span>
-            <span className="open">
-              <i className="live-dot" /> Open to roles
+            <span className="meta-item">
+              <MapPin size={12} /> {profile.location}
             </span>
+            <span className="sep">·</span>
+            <span className="meta-item">
+              <i className="live-dot ping" /> Open to roles
+            </span>
+            {views !== null && (
+              <>
+                <span className="sep">·</span>
+                <span className="meta-item">
+                  <Eye size={12} /> {views.toLocaleString()} views
+                </span>
+              </>
+            )}
           </BlurFade>
         </div>
         <BlurFade delay={0.35} className="profile-actions">
@@ -193,11 +304,33 @@ export function Outro() {
         </div>
       </Section>
       <Spacer />
-      <figure className="quote">
-        <span aria-hidden="true">“</span>
-        <BlurFade as="blockquote">{quote.text}</BlurFade>
-        <figcaption>— {quote.by}</figcaption>
-      </figure>
+      <RotatingQuote />
     </>
+  )
+}
+
+/** Quote that changes every 6 s. */
+function RotatingQuote() {
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => setI((n) => (n + 1) % quotes.length), 6000)
+    return () => clearInterval(id)
+  }, [])
+  return (
+    <figure className="quote">
+      <span aria-hidden="true">“</span>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, y: 8, filter: 'blur(6px)' }}
+          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          exit={{ opacity: 0, y: -8, filter: 'blur(6px)' }}
+          transition={{ duration: 0.5, ease }}
+        >
+          <blockquote>{quotes[i].text}</blockquote>
+          <figcaption>— {quotes[i].by}</figcaption>
+        </motion.div>
+      </AnimatePresence>
+    </figure>
   )
 }

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   Briefcase,
+  Check,
   Compass,
   Copy,
   CornerDownLeft,
@@ -59,9 +60,10 @@ export default function CommandPalette() {
         name: 'Actions',
         items: [
           {
-            label: 'Copy email address',
+            label: toast ? 'Copied!' : 'Copy email address',
             hint: profile.email,
-            icon: Copy,
+            keywords: 'copy email address',
+            icon: toast ? () => <Check size={15} className="ok" /> : Copy,
             keep: true,
             run: async () => {
               try {
@@ -79,11 +81,11 @@ export default function CommandPalette() {
         ],
       },
     ]
-  }, [navigate, toggle])
+  }, [navigate, toggle, toast])
 
   const term = q.trim().toLowerCase()
   const filtered = groups
-    .map((g) => ({ ...g, items: g.items.filter((i) => !term || `${i.label} ${i.hint}`.toLowerCase().includes(term)) }))
+    .map((g) => ({ ...g, items: g.items.filter((i) => !term || `${i.label} ${i.hint} ${i.keywords || ''}`.toLowerCase().includes(term)) }))
     .filter((g) => g.items.length)
   const flat = filtered.flatMap((g) => g.items)
 
@@ -188,7 +190,7 @@ export default function CommandPalette() {
             </div>
             <div className="palette-foot">
               <span>↑↓ navigate · Enter select</span>
-              <span>{toast || 'ESC close'}</span>
+              <span>ESC close</span>
             </div>
           </motion.div>
         </motion.div>
