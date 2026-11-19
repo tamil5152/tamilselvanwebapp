@@ -1,109 +1,90 @@
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion, useScroll } from 'framer-motion'
+import { NavLink, Link, useLocation } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Menu, Moon, Search, Sun, X } from 'lucide-react'
 import { profile } from '../data/content.js'
-import { ease } from './ui.jsx'
+import { ease, usePalette, useTheme } from './primitives.jsx'
 
-const links = [
-  { id: 'experience', label: 'Experience' },
-  { id: 'work', label: 'Work' },
-  { id: 'toolkit', label: 'Toolkit' },
-  { id: 'contact', label: 'Contact' },
+export const pages = [
+  { to: '/', label: 'Home' },
+  { to: '/projects', label: 'Projects' },
+  { to: '/experience', label: 'Experience' },
+  { to: '/contact', label: 'Contact' },
 ]
 
-function useTheme() {
-  const [theme, setTheme] = useState(
-    () => document.documentElement.getAttribute('data-theme') || 'light',
+export function ThemeButton() {
+  const { theme, toggle } = useTheme()
+  return (
+    <button className="icon-btn" onClick={toggle} aria-label="Toggle theme">
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          key={theme}
+          initial={{ rotate: -90, scale: 0.5, opacity: 0 }}
+          animate={{ rotate: 0, scale: 1, opacity: 1 }}
+          exit={{ rotate: 90, scale: 0.5, opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          style={{ display: 'grid' }}
+        >
+          {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+        </motion.span>
+      </AnimatePresence>
+    </button>
   )
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    try {
-      localStorage.setItem('theme', theme)
-    } catch {
-      /* storage unavailable — the theme still applies for this visit */
-    }
-  }, [theme])
-  return [theme, () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))]
 }
 
 export default function Header() {
-  const [theme, toggle] = useTheme()
-  const [open, setOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  const { scrollYProgress } = useScroll()
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+  const { setOpen: openPalette } = usePalette()
+  const [menu, setMenu] = useState(false)
+  const { pathname } = useLocation()
+  useEffect(() => setMenu(false), [pathname])
 
   return (
-    <>
-      <motion.header
-        className={`header ${scrolled ? 'is-scrolled' : ''}`}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.1 }}
-      >
-        <a href="#top" className="wordmark">
-          {profile.name}
-          <i />
-        </a>
-        <nav aria-label="Main">
-          {links.map((l) => (
-            <a key={l.id} href={`#${l.id}`}>
-              {l.label}
-            </a>
+    <header className="header">
+      <div className="header-inner">
+        <Link to="/" className="brand">
+          {profile.shortName}
+        </Link>
+        <nav className="nav" aria-label="Main">
+          {pages.map((p) => (
+            <NavLink key={p.to} to={p.to} end={p.to === '/'} className={({ isActive }) => (isActive ? 'is-active' : '')}>
+              {({ isActive }) => (
+                <>
+                  {p.label}
+                  {isActive && <motion.span layoutId="nav-underline" className="nav-underline" />}
+                </>
+              )}
+            </NavLink>
           ))}
         </nav>
         <div className="header-actions">
-          <button
-            className="theme-btn"
-            onClick={toggle}
-            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
-          >
-            <span className="theme-dot" />
-            {theme === 'dark' ? 'Light' : 'Dark'}
+          <button className="icon-btn" onClick={() => openPalette(true)} aria-label="Search Command Palette">
+            <Search size={15} />
           </button>
-          <button
-            className="menu-btn"
-            onClick={() => setOpen((o) => !o)}
-            aria-expanded={open}
-            aria-label={open ? 'Close menu' : 'Open menu'}
-          >
-            {open ? 'Close' : 'Menu'}
+          <ThemeButton />
+          <button className="icon-btn menu-btn" onClick={() => setMenu((m) => !m)} aria-label="Toggle Mobile Menu" aria-expanded={menu}>
+            {menu ? <X size={16} /> : <Menu size={16} />}
           </button>
         </div>
-        <motion.span className="progress" style={{ scaleX: scrollYProgress }} aria-hidden="true" />
-      </motion.header>
+      </div>
 
       <AnimatePresence>
-        {open && (
-          <motion.div
-            className="mobile-menu"
-            initial={{ clipPath: 'inset(0 0 100% 0)' }}
-            animate={{ clipPath: 'inset(0 0 0% 0)' }}
-            exit={{ clipPath: 'inset(0 0 100% 0)' }}
-            transition={{ duration: 0.7, ease }}
+        {menu && (
+          <motion.nav
+            className="mobile-nav"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.35, ease }}
+            aria-label="Mobile"
           >
-            {links.map((l, i) => (
-              <span className="mask" key={l.id}>
-                <motion.a
-                  href={`#${l.id}`}
-                  onClick={() => setOpen(false)}
-                  initial={{ y: '110%' }}
-                  animate={{ y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.15 + i * 0.07, ease }}
-                >
-                  <small>0{i + 1}</small>
-                  {l.label}
-                </motion.a>
-              </span>
+            {pages.map((p) => (
+              <NavLink key={p.to} to={p.to} end={p.to === '/'} className={({ isActive }) => (isActive ? 'is-active' : '')}>
+                {p.label}
+              </NavLink>
             ))}
-          </motion.div>
+          </motion.nav>
         )}
       </AnimatePresence>
-    </>
+    </header>
   )
 }

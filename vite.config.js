@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// base './' lets the built site work from any path (GitHub Pages, Netlify, Vercel…)
+// Absolute base so nested routes (/projects, /contact) load assets correctly.
 export default defineConfig({
-  base: './',
+  base: '/',
   plugins: [react()],
 })

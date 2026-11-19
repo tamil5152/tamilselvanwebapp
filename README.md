@@ -1,7 +1,7 @@
 # Tamil Selvan — Portfolio
 
-Personal portfolio of Tamil Selvan, Software Development Engineer / Full Stack Developer.
-Built with **React 19**, **Vite** and **Framer Motion**.
+Personal portfolio of Tamil Selvan, Software Development Engineer.
+Built with **React 19**, **Vite**, **React Router**, **Framer Motion** and **lucide-react**.
 
 ## Run it
 
@@ -11,18 +11,23 @@ npm run dev      # local development
 npm run build    # production build in /dist
 ```
 
+## Deploy
+
+Made for **Vercel**: import the repo, keep the defaults (build `npm run build`, output `dist`).
+`vercel.json` rewrites every route to `index.html`, so `/projects`, `/experience` and `/contact` work on refresh.
+The build also writes `dist/404.html` for static hosts that use it as an SPA fallback.
+
 ## Updating the content
 
-All text lives in **`src/data/content.js`** — headline, summary, numbers, experience, HackColab,
-toolkit and education. Wrap a phrase in `**double asterisks**` to emphasise it.
+All text lives in **`src/data/content.js`** — profile, about, projects, experience, education, tech stack and quote.
 
-- **GitHub repositories** load live from the account in `profile.githubUser`; the list hides itself if GitHub is unreachable.
-- **Colours and fonts** are CSS variables at the top of `src/styles.css` (light and dark themes).
-- **SEO / share cards** (title, description, structured data) are in `index.html`.
+- **Photo:** put a square image at `public/profile.jpg`; it replaces the "TS" monogram automatically.
+- **Résumé:** `public/TamilSelvan_Resume.pdf` is what the Resume links open. Replace it to update.
+- **GitHub repos and contribution graph** load live in the visitor's browser; both fall back to a GitHub link if unavailable.
 
-## What's in it
+## Structure
 
-- Editorial serif layout with masked line reveals, self-drawing rules and count-up figures
-- Live local time in the hero, rotating "open to roles" seal, scroll progress line
-- HackColab case study with an animated two-cursor editor illustration
+- Pages: `/` (home), `/projects` (with search + live repo list), `/experience`, `/contact` (with message form)
+- Centred column with dashed rails and hatched section bands, sticky Index on wide screens
+- ⌘K / Ctrl+K command palette for pages, projects and actions
 - Light / dark theme (follows the system, remembers the choice), responsive, respects "reduce motion"
