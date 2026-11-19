@@ -1751,3 +1751,202 @@ a:hover .up {
     animation: none;
   }
 }
+
+/* ───────────── Small details ───────────── */
+/* Chromatic "glitch" edge on the name */
+.text-glitch {
+  text-shadow: -1.5px 0 0 rgba(0, 200, 255, 0.6), 1.5px 0 0 rgba(255, 80, 0, 0.6);
+}
+
+/* Rotating role: fixed-height slot so the layout never jumps */
+.role-slot {
+  height: 20px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.role-slot .profile-role {
+  margin-top: 0;
+  color: var(--muted);
+}
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Avatar: CRT scanlines, moving scan bar and an image-switch button */
+.avatar {
+  position: relative;
+  user-select: none;
+  animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.avatar-inner {
+  width: 100%;
+  height: 100%;
+}
+.scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+  opacity: 0.18;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 4px;
+  transition: opacity 0.3s;
+}
+.avatar:hover .scanlines {
+  opacity: 0.3;
+}
+.scanlines span {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  filter: blur(1px);
+  animation: scanline 8s linear infinite;
+}
+@keyframes scanline {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(80px);
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.avatar-switch {
+  position: absolute;
+  z-index: 2;
+  top: 4px;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--chip);
+  color: var(--muted);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, color 0.2s;
+}
+.avatar-switch:hover {
+  color: var(--fg);
+  transform: scale(1.1) rotate(90deg);
+}
+
+/* Live dot with a radar ping */
+.live-dot.ping {
+  position: relative;
+  box-shadow: none;
+}
+.live-dot.ping::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--live);
+  animation: ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* The cursor cat (see Oneko.jsx) */
+.oneko {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 2147483647;
+  width: 32px;
+  height: 32px;
+  pointer-events: none;
+  image-rendering: pixelated;
+  will-change: transform;
+}
+
+/* Nav links: underline grows from the left on hover */
+.nav a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s;
+}
+.nav a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+.nav a.is-active::after {
+  display: none;
+}
+
+/* Theme button turns on hover */
+.header-actions .icon-btn[aria-label='Toggle theme'] {
+  transition: transform 0.3s, color 0.2s, background 0.2s;
+}
+.header-actions .icon-btn[aria-label='Toggle theme']:hover {
+  transform: rotate(45deg);
+}
+
+/* Index rail: line appears on hover, grows when active */
+.index-rail a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 0;
+}
+.index-rail a::before {
+  content: '';
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.3s;
+}
+.index-rail a:hover::before {
+  width: 8px;
+}
+.index-rail a.is-active {
+  padding-left: 0;
+}
+.index-rail a.is-active::before {
+  position: static;
+  width: 16px;
+}
+
+/* Contribution cells pop on hover */
+.graph rect {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.15s;
+}
+.graph rect:hover {
+  transform: scale(1.25);
+}
+
+.palette .ok {
+  color: #10b981;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scanlines span,
+  .live-dot.ping::after,
+  .avatar {
+    animation: none;
+  }
+}

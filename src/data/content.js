@@ -15,8 +15,13 @@ export const profile = {
   github: 'https://github.com/tamil5152',
   linkedin: 'https://www.linkedin.com/in/tamil--selvan/',
   resume: '/TamilSelvan_Resume.pdf',
-  // Drop a square photo at public/profile.jpg and it replaces the monogram automatically.
-  avatar: '/profile.jpg',
+  // Titles that rotate under the name (every 3.2 s).
+  roles: ['Software Development Engineer', 'Full Stack Developer', 'Java & Node.js Backend', 'AI/ML Enthusiast'],
+  // Square photos in /public. Missing files are skipped; the "TS" monogram is always the last option,
+  // so clicking the avatar cycles photo(s) → monogram. Add e.g. /profile2.jpg for a second photo.
+  avatars: ['/profile.jpg', '/profile2.jpg'],
+  // Live visitor counter (counts once per browser session). Set to '' to hide it.
+  viewsKey: 'tamil5152_portfolio_views',
   openTo: 'full stack, Java backend and AI/ML roles',
 }
 
@@ -183,4 +188,13 @@ export const stack = {
   'DevOps & Tools': ['Docker', 'AWS', 'Zoho Catalyst', 'CI/CD', 'Git', 'Postman', 'IntelliJ'],
 }
 
-export const quote = { text: 'Talk is cheap. Show me the code.', by: 'Linus Torvalds' }
+// Rotate every 6 s at the bottom of each page.
+export const quotes = [
+  { text: 'Talk is cheap. Show me the code.', by: 'Linus Torvalds' },
+  { text: 'Simplicity is prerequisite for reliability.', by: 'Edsger W. Dijkstra' },
+  {
+    text: 'Programs must be written for people to read, and only incidentally for machines to execute.',
+    by: 'Harold Abelson',
+  },
+  { text: 'Make it work, make it right, make it fast.', by: 'Kent Beck' },
+]

@@ -21,7 +21,10 @@ The build also writes `dist/404.html` for static hosts that use it as an SPA fal
 
 All text lives in **`src/data/content.js`** — profile, about, projects, experience, education, tech stack and quote.
 
-- **Photo:** put a square image at `public/profile.jpg`; it replaces the "TS" monogram automatically.
+- **Photos:** put square images at `public/profile.jpg` (and optionally `public/profile2.jpg`). Missing files are skipped;
+  clicking the avatar cycles through the photos and the "TS" monogram.
+- **Rotating titles and quotes:** `profile.roles` and `quotes` in `content.js`.
+- **View counter:** uses the free CountAPI service with the key in `profile.viewsKey` (set it to `''` to hide the counter).
 - **Résumé:** `public/TamilSelvan_Resume.pdf` is what the Resume links open. Replace it to update.
 - **GitHub repos and contribution graph** load live in the visitor's browser; both fall back to a GitHub link if unavailable.
 
@@ -31,3 +34,9 @@ All text lives in **`src/data/content.js`** — profile, about, projects, experi
 - Centred column with dashed rails and hatched section bands, sticky Index on wide screens
 - ⌘K / Ctrl+K command palette for pages, projects and actions
 - Light / dark theme (follows the system, remembers the choice), responsive, respects "reduce motion"
+- Small touches: rotating role under the name, chromatic name edge, CRT scanlines on the avatar, live view counter,
+  rotating quotes, hover underlines, and a pixel cat that chases the mouse
+
+## Credits
+
+The cursor cat is a React port of [oneko.js](https://github.com/adryd325/oneko.js) by adryd325 (MIT), including its sprite sheet `public/oneko.gif`.

@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom'
 import { profile } from '../data/content.js'
 import CommandPalette from './CommandPalette.jsx'
 import Header from './Header.jsx'
+import Oneko from './Oneko.jsx'
 import { useClock } from './primitives.jsx'
 
 /** Scroll to the top on page change, or to #section when the URL carries one. */
@@ -69,7 +70,7 @@ function Footer() {
       </p>
       <p className="mono-soft">© {new Date().getFullYear()} All rights reserved.</p>
       <p className="mono-soft">
-        <i className="live-dot" /> {profile.location} · {time}
+        <i className="live-dot ping" /> {profile.location} · {time}
       </p>
     </footer>
   )
@@ -88,6 +89,7 @@ export default function Layout({ children }) {
       </div>
       {pathname === '/' && <IndexRail />}
       <CommandPalette />
+      <Oneko />
     </>
   )
 }
